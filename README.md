@@ -40,9 +40,9 @@ import PackageDescription
 
 let package = Package(
 	dependencies: [
-		.Package(url: "https://github.com/ZewoFlux/BasicAuthMiddleware.git", majorVersion: 0, minor: 2),
-		.Package(url: "https://github.com/ZewoFlux/HTTPServer.git", majorVersion: 0, minor: 2),
-		.Package(url: "https://github.com/ZewoFlux/Router.git", majorVersion: 0, minor: 2)
+		.Package(url: "https://github.com/Zewo/BasicAuthMiddleware.git", majorVersion: 0, minor: 2),
+		.Package(url: "https://github.com/Zewo/HTTPServer.git", majorVersion: 0, minor: 2),
+		.Package(url: "https://github.com/Zewo/Router.git", majorVersion: 0, minor: 2)
 	]
 )
 ```
