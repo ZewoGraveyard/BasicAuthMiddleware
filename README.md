@@ -95,4 +95,4 @@ Join us on [Slack](http://slack.zewo.io).
 License
 -------
 
-**BasicAuthenticationMiddleware** is released under the MIT license. See LICENSE for details.
+**BasicAuthenMiddleware** is released under the MIT license. See LICENSE for details.
