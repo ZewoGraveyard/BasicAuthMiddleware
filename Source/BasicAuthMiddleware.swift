@@ -1,4 +1,4 @@
-// BasicAuthenticationMiddleware.swift
+// BasicAuthMiddleware.swift
 //
 // The MIT License (MIT)
 //
@@ -36,7 +36,7 @@ enum AuthenticationType {
     case Client(username: String, password: String)
 }
 
-public struct BasicAuthenticationMiddleware: MiddlewareType {
+public struct BasicAuthMiddleware: MiddlewareType {
 	let type: AuthenticationType
 
     public init(authenticate: (username: String, password: String) throws -> AuthenticationResult) {
