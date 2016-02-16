@@ -22,10 +22,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-import Base64
-import Data
-import HTTP
-import String
+@_exported import Base64
+@_exported import HTTP
 
 public struct BasicAuthenticationMiddleware: MiddlewareType {
 	let authenticate: (username: String, password: String) throws -> (key: String, value: Any)?
@@ -33,27 +31,27 @@ public struct BasicAuthenticationMiddleware: MiddlewareType {
 	public init(authenticate: (username: String, password: String) throws -> (key: String, value: Any)?) {
 		self.authenticate = authenticate
 	}
-	
+
 	public func respond(request: Request, chain: ChainType) throws -> Response {
 
 		if let authorization = request.headers["authorization"] {
 			let tokens = authorization.split(" ")
-			
+
 			if tokens.count == 2 && tokens[0] == "Basic" {
-				
+
 				let decodedData: Data = try Base64.decode(tokens[1])
 				let decodedCredentials: String = try String(data: decodedData)
 				let credentials = decodedCredentials.split(":")
-				
+
 				if credentials.count == 2 {
-					
+
 					let username = credentials[0]
 					let password = credentials[1]
 
 					guard let (key, value) = try authenticate(username: username, password: password) else {
 						return Response(status: .Unauthorized)
 					}
-					
+
 					var _request = request
 					_request.storage[key] = value
 					return try chain.proceed(_request)
