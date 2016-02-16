@@ -45,6 +45,17 @@ let basicAuth = BasicAuthMiddleware { username, password in
 }
 ```
 
+Then you can retrieve the value in the route.
+
+```swift
+let router = Router(middleware: basicAuth) { route in
+	route.get("/") { request in
+		let user = request.storage["user"]!
+		// Do what you want with the user
+		return Response(status: .OK, body: "Authenticated")
+	}
+}
+```
 
 ### Client
 
