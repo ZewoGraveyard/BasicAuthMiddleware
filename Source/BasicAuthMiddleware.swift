@@ -26,9 +26,9 @@
 @_exported import HTTP
 
 public enum AuthenticationResult {
-	case AccessDenied
-	case Authenticated
-	case Payload(key: String, value: Any)
+    case AccessDenied
+    case Authenticated
+    case Payload(key: String, value: Any)
 }
 
 enum AuthenticationType {
@@ -37,7 +37,7 @@ enum AuthenticationType {
 }
 
 public struct BasicAuthMiddleware: MiddlewareType {
-	let type: AuthenticationType
+    let type: AuthenticationType
 
     public init(authenticate: (username: String, password: String) throws -> AuthenticationResult) {
         self.type = .Server(authenticate: authenticate)
@@ -61,33 +61,33 @@ public struct BasicAuthMiddleware: MiddlewareType {
             return Response(status: .Unauthorized)
         }
 
-		let tokens = authorization.split(" ")
+        let tokens = authorization.split(" ")
 
         if tokens.count != 2 || tokens[0] != "Basic" {
             return Response(status: .Unauthorized)
         }
 
-		let decodedData = try Base64.decode(tokens[1])
-		let decodedCredentials = try String(data: decodedData)
-		let credentials = decodedCredentials.split(":")
+        let decodedData = try Base64.decode(tokens[1])
+        let decodedCredentials = try String(data: decodedData)
+        let credentials = decodedCredentials.split(":")
 
         if credentials.count != 2 {
             return Response(status: .Unauthorized)
         }
 
-		let username = credentials[0]
-		let password = credentials[1]
+        let username = credentials[0]
+        let password = credentials[1]
 
-		switch try authenticate(username: username, password: password) {
+        switch try authenticate(username: username, password: password) {
         case .AccessDenied:
-			return Response(status: .Unauthorized)
+            return Response(status: .Unauthorized)
         case .Authenticated:
             return try chain.proceed(request)
         case .Payload(let key, let value):
             var request = request
             request.storage[key] = value
             return try chain.proceed(request)
-		}
+        }
     }
 
     public func clientRespond(request: Request, chain: ChainType, username: String, password: String) throws -> Response {
