@@ -91,6 +91,9 @@ public struct BasicAuthenticationMiddleware: MiddlewareType {
     }
 
     public func clientRespond(request: Request, chain: ChainType, username: String, password: String) throws -> Response {
+        var request = request
+        let credentials = try Base64.encode("\(username):\(password)")
+        request.authorization = "Basic \(credentials))"
         return try chain.proceed(request)
     }
 }
