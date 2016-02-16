@@ -74,7 +74,7 @@ let response = try client.get("/", middleware: basicAuth)
 
 ## Installation
 
-- Add `Basic Auth Middleware` to your `Package.swift`
+- Add `BasicAuthMiddleware` to your `Package.swift`
 
 ```swift
 import PackageDescription
