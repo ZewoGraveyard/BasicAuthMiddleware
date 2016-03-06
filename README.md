@@ -7,7 +7,7 @@ BasicAuthMiddleware
 [![License MIT](https://img.shields.io/badge/License-MIT-blue.svg?style=flat)](https://tldrlegal.com/license/mit-license)
 [![Slack Status](https://zewo-slackin.herokuapp.com/badge.svg)](http://slack.zewo.io)
 
-**BasicAuthMiddleware** for **Swift 2.2** provides a fast way to authenticate your endpoints.
+**BasicAuthMiddleware** provides basic authentication for server and client.
 
 ## Usage
 
