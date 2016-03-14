@@ -59,7 +59,7 @@ let router = Router(middleware: basicAuth) { route in
 }
 ```
 
-If you want the browser to show a login prompt after receiving a 401 Access Denied, you can set an optional `Basic realm` for the `WWW-Authenticate`.
+If you want the browser to show a login prompt after receiving `Access Denied`, you can set an optional `Basic realm` for the `WWW-Authenticate` header.
 
 ```swift
 let basicAuth = BasicAuthMiddleware(realm: "Password Protected Realm") { username, password in
