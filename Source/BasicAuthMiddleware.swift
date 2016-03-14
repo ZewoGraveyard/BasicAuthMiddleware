@@ -32,15 +32,15 @@ public enum AuthenticationResult {
 }
 
 enum AuthenticationType {
-    case Server(authenticate: (username: String, password: String) throws -> AuthenticationResult)
+    case Server(realm: String?, authenticate: (username: String, password: String) throws -> AuthenticationResult)
     case Client(username: String, password: String)
 }
 
 public struct BasicAuthMiddleware: MiddlewareType {
     let type: AuthenticationType
 
-    public init(authenticate: (username: String, password: String) throws -> AuthenticationResult) {
-        self.type = .Server(authenticate: authenticate)
+    public init(realm: String? = nil, authenticate: (username: String, password: String) throws -> AuthenticationResult) {
+        self.type = .Server(realm: realm, authenticate: authenticate)
     }
 
     public init(username: String, password: String) {
@@ -49,22 +49,29 @@ public struct BasicAuthMiddleware: MiddlewareType {
 
     public func respond(request: Request, chain: ChainType) throws -> Response {
         switch type {
-        case .Server(let authenticate):
-            return try serverRespond(request, chain: chain, authenticate: authenticate)
+        case .Server(let realm, let authenticate):
+            return try serverRespond(request, chain: chain, realm: realm, authenticate: authenticate)
         case .Client(let username, let password):
             return try clientRespond(request, chain: chain, username: username, password: password)
         }
     }
 
-    public func serverRespond(request: Request, chain: ChainType, authenticate: (username: String, password: String) throws -> AuthenticationResult) throws -> Response {
+    public func serverRespond(request: Request, chain: ChainType, realm: String? = nil, authenticate: (username: String, password: String) throws -> AuthenticationResult) throws -> Response {
+        var deniedResponse : Response
+        if let realm = realm {
+            deniedResponse = Response(status: .Unauthorized, headers: ["WWW-Authenticate": "Basic realm=\"\(realm)\""])
+        } else {
+            deniedResponse = Response(status: .Unauthorized)
+        }
+        
         guard let authorization = request.authorization else {
-            return Response(status: .Unauthorized)
+            return deniedResponse
         }
 
         let tokens = authorization.split(" ")
 
         if tokens.count != 2 || tokens[0] != "Basic" {
-            return Response(status: .Unauthorized)
+            return deniedResponse
         }
 
         let decodedData = try Base64.decode(tokens[1])
@@ -72,7 +79,7 @@ public struct BasicAuthMiddleware: MiddlewareType {
         let credentials = decodedCredentials.split(":")
 
         if credentials.count != 2 {
-            return Response(status: .Unauthorized)
+            return deniedResponse
         }
 
         let username = credentials[0]
@@ -80,7 +87,7 @@ public struct BasicAuthMiddleware: MiddlewareType {
 
         switch try authenticate(username: username, password: password) {
         case .AccessDenied:
-            return Response(status: .Unauthorized)
+            return deniedResponse
         case .Authenticated:
             return try chain.proceed(request)
         case .Payload(let key, let value):
