@@ -26,42 +26,42 @@
 @_exported import HTTP
 
 public enum AuthenticationResult {
-    case AccessDenied
-    case Authenticated
-    case Payload(key: String, value: Any)
+    case accessDenied
+    case authenticated
+    case payload(key: String, value: Any)
 }
 
 enum AuthenticationType {
-    case Server(realm: String?, authenticate: (username: String, password: String) throws -> AuthenticationResult)
-    case Client(username: String, password: String)
+    case server(realm: String?, authenticate: (username: String, password: String) throws -> AuthenticationResult)
+    case client(username: String, password: String)
 }
 
-public struct BasicAuthMiddleware: MiddlewareType {
+public struct BasicAuthMiddleware: Middleware {
     let type: AuthenticationType
 
     public init(realm: String? = nil, authenticate: (username: String, password: String) throws -> AuthenticationResult) {
-        self.type = .Server(realm: realm, authenticate: authenticate)
+        self.type = .server(realm: realm, authenticate: authenticate)
     }
 
     public init(username: String, password: String) {
-        self.type = .Client(username: username, password: password)
+        self.type = .client(username: username, password: password)
     }
 
-    public func respond(request: Request, chain: ChainType) throws -> Response {
+    public func respond(request: Request, chain: Responder) throws -> Response {
         switch type {
-        case .Server(let realm, let authenticate):
+        case .server(let realm, let authenticate):
             return try serverRespond(request, chain: chain, realm: realm, authenticate: authenticate)
-        case .Client(let username, let password):
+        case .client(let username, let password):
             return try clientRespond(request, chain: chain, username: username, password: password)
         }
     }
 
-    public func serverRespond(request: Request, chain: ChainType, realm: String? = nil, authenticate: (username: String, password: String) throws -> AuthenticationResult) throws -> Response {
+    public func serverRespond(request: Request, chain: Responder, realm: String? = nil, authenticate: (username: String, password: String) throws -> AuthenticationResult) throws -> Response {
         var deniedResponse : Response
         if let realm = realm {
-            deniedResponse = Response(status: .Unauthorized, headers: ["WWW-Authenticate": "Basic realm=\"\(realm)\""])
+            deniedResponse = Response(status: .unauthorized, headers: ["WWW-Authenticate": ["Basic realm=\"\(realm)\""]])
         } else {
-            deniedResponse = Response(status: .Unauthorized)
+            deniedResponse = Response(status: .unauthorized)
         }
         
         guard let authorization = request.authorization else {
@@ -86,21 +86,21 @@ public struct BasicAuthMiddleware: MiddlewareType {
         let password = credentials[1]
 
         switch try authenticate(username: username, password: password) {
-        case .AccessDenied:
+        case .accessDenied:
             return deniedResponse
-        case .Authenticated:
-            return try chain.proceed(request)
-        case .Payload(let key, let value):
+        case .authenticated:
+            return try chain.respond(request)
+        case .payload(let key, let value):
             var request = request
             request.storage[key] = value
-            return try chain.proceed(request)
+            return try chain.respond(request)
         }
     }
 
-    public func clientRespond(request: Request, chain: ChainType, username: String, password: String) throws -> Response {
+    public func clientRespond(request: Request, chain: Responder, username: String, password: String) throws -> Response {
         var request = request
         let credentials = try Base64.encode("\(username):\(password)")
         request.authorization = "Basic \(credentials))"
-        return try chain.proceed(request)
+        return try chain.respond(request)
     }
 }
