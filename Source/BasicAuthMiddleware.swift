@@ -47,7 +47,7 @@ public struct BasicAuthMiddleware: Middleware {
         self.type = .client(username: username, password: password)
     }
 
-    public func respond(request: Request, chain: Responder) throws -> Response {
+    public func respond(to request: Request, chainingTo chain: Responder) throws -> Response {
         switch type {
         case .server(let realm, let authenticate):
             return try serverRespond(request, chain: chain, realm: realm, authenticate: authenticate)
@@ -89,11 +89,11 @@ public struct BasicAuthMiddleware: Middleware {
         case .accessDenied:
             return deniedResponse
         case .authenticated:
-            return try chain.respond(request)
+            return try chain.respond(to: request)
         case .payload(let key, let value):
             var request = request
             request.storage[key] = value
-            return try chain.respond(request)
+            return try chain.respond(to: request)
         }
     }
 
@@ -101,6 +101,6 @@ public struct BasicAuthMiddleware: Middleware {
         var request = request
         let credentials = try Base64.encode("\(username):\(password)")
         request.authorization = "Basic \(credentials))"
-        return try chain.respond(request)
+        return try chain.respond(to: request)
     }
 }
