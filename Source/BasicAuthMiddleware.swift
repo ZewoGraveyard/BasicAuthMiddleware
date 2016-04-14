@@ -56,7 +56,7 @@ public struct BasicAuthMiddleware: Middleware {
         }
     }
 
-    public func serverRespond(request: Request, chain: Responder, realm: String? = nil, authenticate: (username: String, password: String) throws -> AuthenticationResult) throws -> Response {
+    public func serverRespond(_ request: Request, chain: Responder, realm: String? = nil, authenticate: (username: String, password: String) throws -> AuthenticationResult) throws -> Response {
         var deniedResponse : Response
         if let realm = realm {
             deniedResponse = Response(status: .unauthorized, headers: ["WWW-Authenticate": ["Basic realm=\"\(realm)\""]])
@@ -68,7 +68,7 @@ public struct BasicAuthMiddleware: Middleware {
             return deniedResponse
         }
 
-        let tokens = authorization.split(" ")
+        let tokens = authorization.split(separator: " ")
 
         if tokens.count != 2 || tokens[0] != "Basic" {
             return deniedResponse
@@ -76,7 +76,7 @@ public struct BasicAuthMiddleware: Middleware {
 
         let decodedData = try Base64.decode(tokens[1])
         let decodedCredentials = try String(data: decodedData)
-        let credentials = decodedCredentials.split(":")
+        let credentials = decodedCredentials.split(separator: ":")
 
         if credentials.count != 2 {
             return deniedResponse
@@ -97,7 +97,7 @@ public struct BasicAuthMiddleware: Middleware {
         }
     }
 
-    public func clientRespond(request: Request, chain: Responder, username: String, password: String) throws -> Response {
+    public func clientRespond(_ request: Request, chain: Responder, username: String, password: String) throws -> Response {
         var request = request
         let credentials = try Base64.encode("\(username):\(password)")
         request.authorization = "Basic \(credentials))"
