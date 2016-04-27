@@ -6,6 +6,7 @@
 [![License][mit-badge]][mit-url]
 [![Slack][slack-badge]][slack-url]
 [![Travis][travis-badge]][travis-url]
+[![Codebeat][codebeat-badge]][codebeat-url]
 
 **BasicAuthMiddleware** provides basic authentication for server and client.
 
@@ -127,3 +128,5 @@ This project is released under the MIT license. See [LICENSE](LICENSE) for detai
 [slack-url]: http://slack.zewo.io
 [travis-badge]: https://travis-ci.org/Zewo/BasicAuthMiddleware.svg?branch=master
 [travis-url]: https://travis-ci.org/Zewo/BasicAuthMiddleware
+[codebeat-badge]: https://codebeat.co/badges/a8045316-e11c-4d46-adbb-c887742d6c6e
+[codebeat-url]: https://codebeat.co/projects/github-com-zewo-basicauthmiddleware
