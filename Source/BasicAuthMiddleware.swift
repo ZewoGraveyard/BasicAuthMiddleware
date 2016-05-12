@@ -74,7 +74,7 @@ public struct BasicAuthMiddleware: Middleware {
             return deniedResponse
         }
 
-        let decodedData = try Base64.decode(tokens[1])
+        let decodedData = Base64.decode(tokens[1])
         let decodedCredentials = try String(data: decodedData)
         let credentials = decodedCredentials.split(separator: ":")
 
@@ -99,7 +99,7 @@ public struct BasicAuthMiddleware: Middleware {
 
     public func clientRespond(_ request: Request, chain: Responder, username: String, password: String) throws -> Response {
         var request = request
-        let credentials = try Base64.encode("\(username):\(password)")
+        let credentials = Base64.encode("\(username):\(password)")
         request.authorization = "Basic \(credentials))"
         return try chain.respond(to: request)
     }
