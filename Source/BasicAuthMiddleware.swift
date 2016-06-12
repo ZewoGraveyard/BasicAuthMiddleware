@@ -74,7 +74,7 @@ public struct BasicAuthMiddleware: Middleware {
             return deniedResponse
         }
 
-        let decodedData = Base64.decode(tokens[1])
+        let decodedData = try Base64.decode(tokens[1])
         let decodedCredentials = try String(data: decodedData)
         let credentials = decodedCredentials.split(separator: ":")
 

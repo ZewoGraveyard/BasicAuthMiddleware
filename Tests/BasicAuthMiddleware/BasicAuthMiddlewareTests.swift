@@ -8,9 +8,10 @@ class BasicAuthMiddlewareTests: XCTestCase {
 }
 
 extension BasicAuthMiddlewareTests {
-    static var allTests: [(String, BasicAuthMiddlewareTests -> () throws -> Void)] {
+    static var allTests: [(String, (BasicAuthMiddlewareTests) -> () throws -> Void)] {
         return [
            ("testReality", testReality),
         ]
     }
 }
+s
