@@ -59,7 +59,7 @@ public struct BasicAuthMiddleware: Middleware {
     public func serverRespond(_ request: Request, chain: Responder, realm: String? = nil, authenticate: (username: String, password: String) throws -> AuthenticationResult) throws -> Response {
         var deniedResponse : Response
         if let realm = realm {
-            deniedResponse = Response(status: .unauthorized, headers: ["WWW-Authenticate": ["Basic realm=\"\(realm)\""]])
+            deniedResponse = Response(status: .unauthorized, headers: ["WWW-Authenticate": "Basic realm=\"\(realm)\""])
         } else {
             deniedResponse = Response(status: .unauthorized)
         }
